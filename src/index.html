@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVC Crud Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <main class="main-container">
+        <header class="chat-header">
+            <h1>MVC Crud Chat App</h1>
+            <div class="chat-stats">
+                <p id="message-count">Messages: 0</p>
+                <p id="last-saved-time">Last saved: Never saved</p>
+            </div>
+            <div class="chat-controls">
+                <button id="export-button" class="control-button">Export</button>
+                <button id="import-button" class="control-button">Import</button>
+                <button id="clear-button" class="control-button cancel">Clear Messages</button>
+            </div>
+        </header>
+
+        <section class="chat-container" id="chat-container">
+            <div class="empty-state" id="empty-state">
+                <p>There are no messages yet!</p>
+            </div>
+        </section>
+
+        <form class="chat-area" id="chat-area">
+            <input type="text" placeholder="Type your message..." class="message-input" id="message-input">
+            <button type="submit" class="send-button" id="send-button">Send</button>
+        </form>
+
+        <input type="file" accept=".json" id="file-input" style="display: none;">
+    </main>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

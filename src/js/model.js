@@ -6,7 +6,7 @@ export class ChatModel {
         this.messages = [];
         this.observers = [];
         this.storageKey = 'chat-messages-data';
-        this.loadFromStorage();
+        this.loadFromLocalStorage();
     }
 
     addObserver(observer) { }
@@ -51,10 +51,30 @@ export class ChatModel {
     }
 
     // save to local storage
-    saveToStorage() { }
+    saveToLocalStorage() {
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify(this.messages));
+        } catch (error) {
+            console.error('couldnt save to localstorage: ', error);
+        }
+    }
 
     // load from local storage
-    loadFromStorage() { }
+    loadFromLocalStorage() {
+        try {
+            const storageData = localStorage.getItem(this.storageKey);
+            const data = JSON.parse(storageData);
+
+            if (!data) {
+                throw new Error('data invalid or empty');
+            }
+            this.messages = data.messages;
+
+        } catch (error) {
+            console.error('couldnt load from localstorage:', error);
+            this.messages = [];
+        }
+    }
 
     // just return data as string, then controller will handle actual exporting
     exportData() {

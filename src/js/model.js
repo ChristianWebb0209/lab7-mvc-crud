@@ -56,9 +56,26 @@ export class ChatModel {
     // load from local storage
     loadFromStorage() { }
 
-    // export as json
-    exportData() { }
+    // just return data as string, then controller will handle actual exporting
+    exportData() {
+        return JSON.stringify(this.messages);
+    }
 
     // import as json
-    importData(data) { }
+    importData(data) {
+        try {
+            const data = JSON.parse(jsonData);
+
+            if (!data)
+                throw new Error('data empty or invalid');
+
+            this.messages = data.messages;
+            this.saveToLocalStorage();
+            this.notifyObservers();
+            return true;
+        } catch (error) {
+            console.error('error importing data:', error);
+            return false;
+        }
+    }
 }

@@ -95,3 +95,31 @@ body {
     font-size: 16px;
     outline: none;
 }
+
+/* new button stylings */
+
+button {
+    padding: 12px 16px;
+    color: white;
+    background-color: #6699ff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.control-button {
+    background-color: #8fb3fc;
+}
+
+.control-button.cancel {
+    background-color: #fc8f8f;
+}
+
+.chat-stats {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+
+    opacity: 0.8;
+}

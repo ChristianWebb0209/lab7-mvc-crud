@@ -58,7 +58,22 @@ export class ChatView {
     }
 
     // render all messages (calls createMessageElement for each message)
-    updateMessages(messages) { }
+    updateMessages(messages) {
+        // reset
+        this.chatContainer.innerHTML = '';
+
+        // create element for each message
+        messages.forEach(msg => {
+            const messageElement = this.createMessageElement(msg);
+            this.chatContainer.appendChild(messageElement);
+        });
+
+        // scroll to bottom
+        this.chatContainer.scrollTo({
+            top: this.chatContainer.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
 
     // create message in dom
     createMessageElement(message) { }

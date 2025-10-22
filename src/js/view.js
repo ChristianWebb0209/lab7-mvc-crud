@@ -21,7 +21,34 @@ export class ChatView {
         this.setupEventListeners();
     }
 
-    setupEventListeners() { }
+    setupEventListeners() {
+
+        // submit and enter key to submit form, same as in lab 6
+        this.chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.controller.handleSendMessage();
+        });
+
+        this.messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.controller.handleSendMessage();
+            }
+        });
+
+        // add button event listeners and send to controller functions
+        this.exportbutton.addEventListener('click', () => this.controller.handleExport());
+        this.importbutton.addEventListener('click', () => this.controller.view.fileInput.click());
+        this.clearbutton.addEventListener('click', () => this.controller.handleClear());
+
+        // when anything happens to the fileINput that means a file got selected, so handle that
+        this.fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                this.controller.handleFileSelected(file);
+            }
+        });
+    }
 
     // update messages (called whenever changed)
     update(messages) {

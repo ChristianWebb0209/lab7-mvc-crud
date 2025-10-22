@@ -76,7 +76,48 @@ export class ChatView {
     }
 
     // create message in dom
-    createMessageElement(message) { }
+    createMessageElement(message) {
+        const isEditing = this.editingMessageId == message.id;
+
+        // clone the appropriate template from html
+        const template = document.getElementById(isEditing ? 'edit-template' : 'message-template');
+        const messageDiv = template.content.firstElementChild.cloneNode(true);
+
+        messageDiv.className = `message ${message.isUser ? 'user' : 'bot'}`;
+        messageDiv.dataset.messageId = message.id;
+
+        // add event listeners depending on if it is editing or not
+        if (isEditing) {
+            const input = messageDiv.querySelector('.edit-input');
+            input.value = message.text;
+
+            // hook up event listeners
+            messageDiv.querySelector('.edit-button')
+                .addEventListener('click', () => this.controller.handleSaveEdit(message.id, input.value));
+            messageDiv.querySelector('.cancel-button')
+                .addEventListener('click', () => this.controller.handleCancelEdit(message.id));
+        } else {
+            const messageContent = messageDiv.querySelector('.message-content');
+            messageContent.querySelector('.message-text').textContent = message.text;
+            // set metadata to have (edited) if edited
+            messageContent.querySelector('.message-metadata').textContent =
+                `${new Date(message.timestamp).toLocaleTimeString()}${message.edited ? ' (edited)' : ''}`;
+
+            // add message action button listeners
+            if (message.isUser) {
+                messageContent.querySelector('.edit-button')
+                    .addEventListener('click', () => this.controller.handleEditMessage(message.id));
+                messageContent.querySelector('.delete-button')
+                    .addEventListener('click', () => this.controller.handleDeleteMessage(message.id));
+            } else {
+                // hide actions if its a bot message
+                messageContent.querySelector('.message-actions').remove();
+            }
+        }
+
+        return messageDiv;
+    }
+
 
     // update stats for messages
     updateMessageStats(messages) { }

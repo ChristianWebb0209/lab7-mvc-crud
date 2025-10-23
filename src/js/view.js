@@ -156,7 +156,24 @@ export class ChatView {
     }
 
     // download file JSON
-    downloadFile(data, filename) { }
+    downloadFile(data, filename) {
+        // from my research we should use a blob here for sure, but we didnt learn about that in class, hope im doing this right
+        const blob = new Blob(
+            [data],
+            { type: 'application/json' }
+        );
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+    }
 
     // show confirmation alert with option cancel or accept
     showConfirmationAlert(message, onCancel, onConfirm) {

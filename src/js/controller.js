@@ -7,24 +7,50 @@ export class ChatController {
         this.model = new ChatModel();
         this.view = new ChatView(this);
 
-        this.view.update(messages);
+        // adding || [] for debugging
+        this.model.addObserver((messages) => {
+            this.view.update(messages || []);
+        });
+
         // sat up view at first with current messages
+        this.view.update(this.model.messages || []);
+    }
+
+    handleSendMessage() {
+        const messageText = this.view.getInputText();
+
+        this.model.createMessage(messageText, true);
+        this.view.clearInput();
+        this.model.createMessage(getBotResponse(messageText), false);
+    }
+
+    handleEditMessage(messageId) {
+        const message = this.model.getMessage(messageId);
+        if (!message || !message.isUser) {
+            this.view.showError('error editing message');
+            return;
+        }
+
+        this.view.editingMessageId = messageId;
         this.view.update(this.model.messages);
     }
 
-    handleSendMessage() { }
-
-    handleEditMessage(messageId) { }
-
-    handleSaveEdit(messageId, newText) { }
+    handleSaveEdit(messageId, newText) {
+        const updated = this.model.updateMessage(messageId, newText);
+        if (updated) {
+            this.view.editingMessageId = null;
+            this.view.update(this.model.messages);
+            this.view.showSuccess('updated message!');
+        } else {
+            this.view.showError('error updating message');
+        }
+    }
 
     // Handle canceling edit
     handleCancelEdit(messageId) {
         this.view.editingMessageId = null;
         this.view.update(this.model.messages);
     }
-
-
 
     handleExport() {
         const data = this.model.exportData();
@@ -34,10 +60,34 @@ export class ChatController {
     }
 
     handleImport() {
+        // this is just simpler, just virtually click the input so bring up the file selector
         this.view.fileInput.click();
     }
 
-    handleFileSelected(file) { }
+    handleFileSelected(file) {
+        if (!file || !file.name.toLowerCase().endsWith('.json'))
+            return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const success = this.model.importData(e.target.result);
+                if (success) {
+                    this.view.update(this.model.messages);
+                    this.view.showSuccess('imported chat!');
+                } else {
+                    this.view.showError('error importing chat');
+                }
+            } catch (error) {
+                this.view.showError('error importing chat');
+            }
+        };
+
+        reader.readAsText(file);
+        // reset input box
+        this.view.fileInput.value = '';
+    }
+
 
     // Handle deleting a message
     handleDeleteMessage(messageId) {

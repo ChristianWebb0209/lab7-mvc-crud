@@ -100,6 +100,7 @@ export class ChatModel {
     saveToLocalStorage() {
         try {
             localStorage.setItem(this.storageKey, JSON.stringify(this.messages));
+            localStorage.setItem(this.storageKey + '-timestamp', new Date().toISOString());
         } catch (error) {
             console.error('couldnt save to localstorage: ', error);
         }

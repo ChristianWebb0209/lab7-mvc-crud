@@ -9,41 +9,87 @@ export class ChatModel {
         this.loadFromLocalStorage();
     }
 
-    addObserver(observer) { }
+    addObserver(observer) {
+        this.observers.push(observer);
+    }
 
-    removeObserver(observer) { }
+    removeObserver(observer) {
+        this.observers = this.observers.filter(o => o !== observer);
+    }
 
-    notifyObservers() { }
+    notifyObservers() {
+        this.observers.forEach(observer => { observer(this.messages) });
+    }
 
     // make unique id for each message
-    generateMessageId() { }
+    generateMessageId() {
+        return crypto.randomUUID();
+    }
 
     /**
      * create new message
      * (string) text, (bool) isUser
      * returns (objcet) message
     */
-    createMessage(text, isUser = true) { }
+    createMessage(text, isUser = true) {
+        // main message model
+        const message = {
+            id: this.generateMessageId(),
+            timestamp: new Date().toISOString(),
+            text: text,
+            isUser: isUser,
+            edited: false
+        };
 
-    // get all messages
-    getAllMessages() { }
+        this.messages.push(message);
+        this.saveToLocalStorage();
+        this.notifyObservers();
+        return message;
+    }
 
     // gets one message by id
-    getMessage(id) { }
+    getMessage(id) {
+        return this.messages.find(msg => msg.id == id) || null;
+    }
 
     /* update message (for editing)
     * (string) id, (string) newText
     * returns the edited message
     */
     updateMessage(id, newText) {
+        const message = this.messages.find(msg => msg.id == id);
+        if (!message || !message.isUser)
+            return null;
+
+        message.text = newText;
+        message.edited = true;
+        message.lastEdited = new Date().toISOString();
+
+        this.saveToLocalStorage();
+        this.notifyObservers();
+
         return message;
     }
 
     // delete message (string) id
-    deleteMessage(id) { }
+    deleteMessage(id) {
+        const index = this.messages.findIndex(msg => msg.id == id);
+        if (index == -1)
+            return false;
+
+        this.messages.splice(index, 1);
+        this.saveToLocalStorage();
+        this.notifyObservers();
+
+        return true;
+    }
 
     // delete all messages
-    deleteAllMessages() { }
+    deleteAllMessages() {
+        this.messages = [];
+        this.saveToLocalStorage();
+        this.notifyObservers();
+    }
 
     // get message count
     getMessageCount() {
@@ -63,12 +109,17 @@ export class ChatModel {
     loadFromLocalStorage() {
         try {
             const storageData = localStorage.getItem(this.storageKey);
-            const data = JSON.parse(storageData);
+            if (!storageData) {
+                this.messages = [];
+                return;
+            }
 
+            const data = JSON.parse(storageData);
             if (!data) {
                 throw new Error('data invalid or empty');
             }
-            this.messages = data.messages;
+
+            this.messages = Array.isArray(data) ? data : data.messages;
 
         } catch (error) {
             console.error('couldnt load from localstorage:', error);
@@ -82,14 +133,15 @@ export class ChatModel {
     }
 
     // import as json
-    importData(data) {
+    importData(jsonData) {
         try {
             const data = JSON.parse(jsonData);
 
             if (!data)
                 throw new Error('data empty or invalid');
 
-            this.messages = data.messages;
+            // works if its array or not
+            this.messages = Array.isArray(data) ? data : data.messages;
             this.saveToLocalStorage();
             this.notifyObservers();
             return true;

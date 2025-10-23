@@ -3,6 +3,13 @@
 
 In this lab, I made a chat window with a bot using the MVC pattern.
 
+Link to deployment on netlify:
+
+https://68f98a178730c00008db544a--lab7mvc-crud.netlify.app/
+
+https://lab7mvc-crud.netlify.app/
+
+
 ## user docs
 
 To use, just typewhat you want to say in the chat and press enter or click send. You can save or load chats also.

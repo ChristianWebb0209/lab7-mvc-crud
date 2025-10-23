@@ -38,7 +38,7 @@ export class ChatView {
 
         // add button event listeners and send to controller functions
         this.exportbutton.addEventListener('click', () => this.controller.handleExport());
-        this.importbutton.addEventListener('click', () => this.controller.view.fileInput.click());
+        this.importbutton.addEventListener('click', () => this.fileInput.click());
         this.clearbutton.addEventListener('click', () => this.controller.handleClear());
 
         // when anything happens to the fileINput that means a file got selected, so handle that
@@ -120,7 +120,15 @@ export class ChatView {
 
 
     // update stats for messages
-    updateMessageStats(messages) { }
+    updateMessageStats(messages) {
+        this.messageCount.textContent = `Number of Messages: ${messages.length}`;
+
+        const lastSavedRaw = localStorage.getItem('chat-messages-data-timestamp');
+        if (lastSavedRaw)
+            this.lastSaved.textContent = `Last saved: ${new Date(lastSavedRaw).toLocaleString()}`;
+        else
+            this.lastSaved.textContent = 'Never saved chat';
+    }
 
     // update empty state to disappear when theres not 0 messsages
     updateEmptyState(messages) {
@@ -132,19 +140,34 @@ export class ChatView {
 
 
     // get input text
-    getInputText() { }
+    getInputText() {
+        return this.messageInput.value;
+    }
 
     // clear input text
-    clearInput() { }
+    clearInput() {
+        this.messageInput.value = '';
+        this.messageInput.focus();
+    }
 
     // set input text
-    setInputText(text) { }
+    setInputText(text) {
+        this.messageInput.value = value;
+    }
 
     // download file JSON
     downloadFile(data, filename) { }
 
     // show confirmation alert with option cancel or accept
-    showConfirmationAlert(message, onCancel, onConfirm) { }
+    showConfirmationAlert(message, onCancel, onConfirm) {
+        // use confrim instead of alert
+        const confirmed = confirm(message);
+        if (confirmed) {
+            onConfirm();
+        } else {
+            onCancel();
+        }
+    }
 
     // show either error or success (we'll probably want to call alerts from other modules, but only view.js should handle this)
     showError(message) {

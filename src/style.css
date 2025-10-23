@@ -28,6 +28,10 @@ body {
     background-color: #6699ff;
     color: white;
     padding: 20px;
+
+    flex-direction: column;
+    display: flex;
+    gap: 0.5rem;
 }
 
 .chat-header h1 {
@@ -83,7 +87,7 @@ button {
 
 .chat-stats {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     margin-bottom: 15px;
 
     opacity: 0.8;
